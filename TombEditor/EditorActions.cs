@@ -4147,7 +4147,7 @@ namespace TombEditor
                 return false;
             }
 
-            foreach (var room in level.Rooms)
+            foreach (var room in level.Rooms.Where(r => r is not null))
             {
                 foreach (var obj in room.Objects.Where(o => o is MoveableInstance))
                 {
