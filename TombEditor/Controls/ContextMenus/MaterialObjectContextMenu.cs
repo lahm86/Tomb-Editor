@@ -24,7 +24,7 @@ namespace TombEditor.Controls.ContextMenus
                     Items.Add(new ToolStripSeparator());
                 }
 
-                if (_editor.Level.IsTombEngine)
+                if (_editor.Level.IsTombEngine || editor.Level.IsTRX)
                 {
                     Items.Add(new ToolStripMenuItem("Rename object", Properties.Resources.general_edit_16, (o, e) =>
                     {

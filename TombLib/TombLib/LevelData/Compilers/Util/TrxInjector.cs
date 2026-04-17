@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using TombLib.IO;
 using TombLib.LevelData.SectorEnums;
+using TombLib.LuaProperties;
 using TombLib.Utils;
 
 namespace TombLib.LevelData.Compilers.Util;
@@ -41,6 +43,7 @@ public static class TrxInjector
         {
             CreateChunk(TrxChunkType.DataEdits, data, WriteEdits),
             CreateChunk(TrxChunkType.SFX, data, WriteSFXData),
+            CreateChunk(TrxChunkType.Properties, data, WriteProperties),
         };
 
         chunks.RemoveAll(c => c.BlockCount == 0);
@@ -92,6 +95,42 @@ public static class TrxInjector
             s => data.SFX.ForEach(f => f.Serialize(s)));
     }
 
+    private static int WriteProperties(TrxInjectionData data, BinaryWriterEx writer)
+    {
+        if (data.Properties == null)
+            return 0;
+
+        int blockCount = 0;
+
+        blockCount += WriteBlock(TrxBlockType.GlobalMoveableProperties, data.Properties.GlobalMoveables.Count, writer,
+            s => WriteProperties(data.Properties.GlobalMoveables, s));
+        blockCount += WriteBlock(TrxBlockType.MoveableProperties, data.Properties.GlobalMoveables.Count, writer,
+            s => WriteProperties(data.Properties.Moveables, s));
+
+        return blockCount;
+    }
+
+    private static void WriteProperties(Dictionary<string, LuaPropertyContainer> propertyMap, BinaryWriterEx writer)
+    {
+        foreach (var (name, properties) in propertyMap)
+        {
+            WriteString(writer, name);
+            writer.Write(properties.Count);
+            foreach (var property in properties.GetAll())
+            {
+                WriteString(writer, property.Key);
+                WriteString(writer, property.Value);
+            }
+        }
+    }
+
+    private static void WriteString(BinaryWriterEx writer, string str)
+    {
+        var encStr = Encoding.UTF8.GetBytes(str);
+        writer.Write(encStr.Length);
+        writer.Write(encStr);
+    }
+
     private static int WriteBlock(TrxBlockType type, int elementCount,
         BinaryWriterEx writer, Action<BinaryWriterEx> subCallback)
     {
@@ -134,6 +173,7 @@ public static class TrxInjector
     {
         SFX = 5,
         DataEdits = 6,
+        Properties = 8,
     }
 
     private enum TrxBlockType
@@ -141,6 +181,10 @@ public static class TrxInjector
         SoundEffects = 14,
         SectorEdits = 17,
         TextureOverwrites = 20,
+        GlobalMoveableProperties = 21,
+        GlobalStaticProperties = 22,
+        MoveableProperties = 23,
+        StaticProperties = 24,
     }
 }
 
@@ -149,6 +193,7 @@ public class TrxInjectionData
     public List<TrxSectorEdit> SectorEdits { get; set; } = new();
     public List<TrxTextureOverwrite> TexPages { get; set; } = new();
     public List<TrxSFXData> SFX { get; set; } = new();
+    internal PropertyCollection Properties { get; set; }
 }
 
 public abstract class TrxSectorEdit

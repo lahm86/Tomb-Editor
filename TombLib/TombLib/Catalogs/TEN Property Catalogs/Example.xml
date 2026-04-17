@@ -32,6 +32,14 @@
 -->
 <propertyCatalog>
   <!-- Example: Baddy1 (moveable ID 73 in TombEngine slot list) -->
+  <moveable id="6">
+    <property internalName="anchor_room"
+              displayName="Anchor room"
+              type="Int"
+              defaultValue="0"
+              category="Logic"
+              description="The room number to anchor Bacon Lara to." />
+  </moveable>
   <moveable id="174">
     <property internalName="health"
               displayName="Health"

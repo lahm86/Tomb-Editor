@@ -1063,7 +1063,7 @@ namespace TombEditor
                 return;
             }
 
-            if (!VersionCheck(_editor.Level.IsTombEngine, "Object name"))
+            if (!VersionCheck(_editor.Level.IsTombEngine || _editor.Level.IsTRX, "Object name"))
                 return;
 
             if (!(instance is PositionAndScriptBasedObjectInstance))

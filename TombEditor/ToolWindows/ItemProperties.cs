@@ -89,7 +89,7 @@ namespace TombEditor.ToolWindows
             var selected = _editor.SelectedObject;
 
             // Only show for TombEngine levels.
-            if (!_editor.Level.IsTombEngine)
+            if (!_editor.Level.IsTombEngine && !_editor.Level.IsTRX)
             {
                 _viewModel.Clear();
                 _viewModel.Title = "Item Properties";

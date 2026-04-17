@@ -36,6 +36,8 @@ public partial class LevelCompilerClassicTR
         injData.TexPages.AddRange(GenerateTrxTexPages());
         injData.SFX.AddRange(GenerateTrxSFXData());
 
+        injData.Properties = PropertyCollector.Generate(_level);
+
         using var writer = new BinaryWriterEx(new FileStream(_dest, FileMode.Append));
         TrxInjector.Serialize(injData, writer);
     }
